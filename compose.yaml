@@ -1,0 +1,49 @@
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DQ_ROOT_PASSWORD:?Run start-docker first}
+      MYSQL_DATABASE: data_quality_agent
+      MYSQL_USER: dq_app
+      MYSQL_PASSWORD: ${DQ_DB_PASSWORD:?Run start-docker first}
+    volumes:
+      - dq_mysql:/var/lib/mysql
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./sql/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 30s
+    restart: unless-stopped
+
+  agent:
+    build: .
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: data_quality_agent
+      MYSQL_USER: dq_app
+      MYSQL_PASSWORD: ${DQ_DB_PASSWORD:?Run start-docker first}
+      MODEL_PROXY_MODE: direct
+      DQ_ENV_FILE: /app/config/.env
+      APP_TRUST_DOCKER_LOCAL: "1"
+    volumes:
+      - dq_config:/app/config
+    ports:
+      - "127.0.0.1:${DQ_HTTP_PORT:-18000}:8000"
+    healthcheck:
+      test: ["CMD", "python", "-m", "scripts.container_health"]
+      interval: 5s
+      timeout: 10s
+      retries: 24
+      start_period: 30s
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  dq_mysql:
+  dq_config:

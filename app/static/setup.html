@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>启动与配置 · 数据质量 Agent</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/setup.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">DQ</span><span>数据质量 Agent<small>本机启动与配置</small></span></div>
+    <a class="text-link" href="/">进入工作台 ↗</a>
+  </header>
+  <main class="setup-workspace">
+    <section class="setup-hero">
+      <div class="eyebrow">LOCAL SETUP / ONE CLICK START</div>
+      <h1>把服务接好，开始检查订单。</h1>
+      <p>在这里配置模型和 MySQL。密钥只保存在这台机器的项目 <code>.env</code> 中；页面只显示是否已配置，不回显原值。保存后下一次请求立即生效。</p>
+      <div class="setup-status"><span id="setup-db-status" class="status-pill">数据库检测中</span><span id="setup-model-status" class="status-pill">模型检测中</span></div>
+    </section>
+
+    <div class="setup-grid">
+      <section class="panel setup-card" aria-labelledby="model-title">
+        <div class="panel-head"><div><span class="section-kicker">01 / MODEL</span><h2 id="model-title">模型服务与 API Key</h2></div></div>
+        <form id="model-form" class="setup-form">
+          <p class="helper">选择支持 OpenAI 兼容工具调用的模型。DeepSeek 预设可直接使用，也可填写其他服务商。</p>
+          <label>服务商<select id="model-provider"><option value="deepseek">DeepSeek</option><option value="custom">其他兼容服务</option></select></label>
+          <label>接口 base_url<input id="model-base-url" type="url" required spellcheck="false" placeholder="https://api.deepseek.com"></label>
+          <label>模型名称<input id="model-name" required spellcheck="false" placeholder="deepseek-flash"></label>
+          <label>API Key <span id="key-hint" class="field-hint"></span><input id="model-key" type="password" autocomplete="new-password" spellcheck="false" placeholder="留空则保留已保存的密钥"></label>
+          <label>网络连接<select id="model-proxy-mode"><option value="auto">自动使用系统 HTTP(S) 代理</option><option value="direct">直接连接</option><option value="custom">指定代理</option></select></label>
+          <label id="model-proxy-wrap" hidden>代理地址<input id="model-proxy-url" spellcheck="false" placeholder="http://127.0.0.1:7890 或 socks5://127.0.0.1:7892"></label>
+          <div class="setup-actions"><button class="primary" type="submit">保存模型配置</button><button id="test-model" class="secondary outline" type="button">测试模型和工具调用</button></div>
+          <p id="model-save-state" class="helper" role="status"></p>
+          <p class="helper">保存后请点击测试；测试会向模型发送一条无业务数据的工具调用请求。</p>
+        </form>
+      </section>
+
+      <section class="panel setup-card" aria-labelledby="database-title">
+        <div class="panel-head"><div><span class="section-kicker">02 / MYSQL</span><h2 id="database-title">数据库连接</h2></div></div>
+        <form id="database-form" class="setup-form">
+          <p class="helper">演示使用固定库名 <code>data_quality_agent</code>。先保存连接，再检测；新机器可以初始化演示表和 20 条订单。</p>
+          <div class="form-grid"><label>主机<input id="mysql-host" required spellcheck="false"></label><label>端口<input id="mysql-port" type="number" min="1" max="65535" required></label></div>
+          <label>用户名<input id="mysql-user" required spellcheck="false"></label>
+          <label>密码 <span id="password-hint" class="field-hint"></span><input id="mysql-password" type="password" autocomplete="new-password" placeholder="留空则保留已保存的密码"></label>
+          <div class="setup-actions"><button class="primary" type="submit">保存数据库配置</button><button id="test-db" class="secondary outline" type="button">检测连接</button></div>
+          <p id="database-save-state" class="helper" role="status"></p>
+        </form>
+      </section>
+
+      <section class="panel setup-card setup-wide" aria-labelledby="init-title">
+        <div class="panel-head"><div><span class="section-kicker">03 / DEMO DATA</span><h2 id="init-title">准备演示数据</h2></div></div>
+        <div class="setup-form">
+          <p class="helper">仅在订单表为空时写入 20 条基准订单；已有订单、规则和历史执行不会被清除。初始化账号需要建库建表权限，可临时填写 MySQL 管理员账号，凭据不会保存。</p>
+          <div class="form-grid"><label>临时管理员用户名（可选）<input id="admin-user" autocomplete="username" placeholder="留空使用上方账号"></label><label>临时管理员密码（可选）<input id="admin-password" type="password" autocomplete="new-password" placeholder="不会写入 .env"></label></div>
+          <div class="setup-actions"><button id="init-db" class="secondary" type="button">初始化演示库与订单</button><span id="init-state" class="helper" role="status"></span></div>
+          <p class="helper">如果管理员与应用账号不同，应用账号还需要该库的 SELECT、INSERT、UPDATE、DELETE 权限。</p>
+        </div>
+      </section>
+    </div>
+    <div class="setup-finish"><div><strong>准备好了？</strong><p>在工作台输入“检查订单客户名称不能为空，订单状态只能是 NEW、PAID、CANCELLED，创建后运行”。</p></div><a class="primary button-link" href="/">打开工作台 →</a></div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,8 @@
+.env*
+.docker.env*
+.git/
+.venv/
+.pytest_cache/
+**/__pycache__/
+**/*.pyc
+*.zip

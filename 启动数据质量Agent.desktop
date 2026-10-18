@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=数据质量 Agent
+Comment=打开本机配置与订单质量工作台
+Exec=python3 -c "import os,sys;os.execv(os.path.join(os.path.dirname(sys.argv[1]),'start.sh'),['start.sh'])" %k
+Terminal=true
+Categories=Development;

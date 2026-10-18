@@ -1,0 +1,12 @@
+fastapi>=0.115,<1
+uvicorn[standard]>=0.30,<1
+pymysql[rsa]>=1.1,<2
+python-dotenv>=1,<2
+deepagents>=0.5.4,<1
+langchain-openai>=1,<2
+httpx[socks]>=0.28,<1
+pytest>=8,<10
+Faker==40.39.0
+
+python-multipart>=0.0.20,<1
+openpyxl>=3.1.5,<4

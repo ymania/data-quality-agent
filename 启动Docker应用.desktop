@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=数据质量 Agent（Docker）
+Comment=启动容器并打开配置网页
+Exec=bash -c "cd \"\$(dirname \"\$1\")\" && exec bash ./start-docker.command" bash %k
+Terminal=true
+Categories=Development;

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="使用自然语言配置、运行和检查 MySQL 订单数据质量规则">
+  <title>数据质量 Agent · 订单规则工作台</title>
+  <link rel="stylesheet" href="/static/style.css?v=20261018-upload1">
+  <script src="/static/app.js?v=20261018-upload1" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">DQ</span><span>数据质量 Agent<small>订单规则工作台</small></span></div>
+    <div class="top-actions"><span id="db-status" class="status-pill">数据库检测中</span><span id="model-status" class="status-pill">模型检测中</span><a class="top-settings" href="/setup">启动与配置 ⚙</a></div>
+  </header>
+  <main class="workspace">
+    <section class="intro">
+      <div><div class="eyebrow">DATA GOVERNANCE / LIVE WORKSPACE</div><h1>用对话定义规则，查看每次执行留下的证据。</h1><p>面向熟悉订单字段和业务标准的分析员或业务负责人。说清表、字段和检查条件；运行后查看统计与异常样例。</p></div>
+      <div class="intro-metric"><strong>20</strong><span>基准订单</span><small>示例库 · demo_orders</small></div>
+    </section>
+
+    <section class="panel data-panel" aria-labelledby="data-title">
+      <h2 id="data-title">数据来源</h2>
+      <label>本轮创建规则使用<select id="data-source" aria-label="数据来源"></select></label>
+      <p class="helper">保留 MySQL 示例表；上传文件将作为独立数据集存入 MySQL。已有规则始终使用创建时的数据集。</p>
+      <div class="upload-controls"><input type="file" id="data-file" accept=".csv,.xlsx" aria-label="上传订单文件"><button id="preview-file" class="secondary">预览文件</button><button id="import-file" class="primary" disabled>确认导入</button><a href="/api/datasets/template.csv">下载 CSV 模板</a></div>
+      <p class="helper">UTF-8 CSV / 单工作表 Excel · 最大 5 MiB、20000 行。必需列：order_id、customer_name、order_status。CSV 空单元格保留为空字符串，\N 表示 NULL；Excel 空单元格为 NULL。异常业务值不会被自动修正。</p>
+      <p id="upload-state" role="status" aria-live="polite">选择文件后先预览，再确认导入。</p><div id="data-preview" class="data-preview"></div>
+    </section>
+    <div class="columns">
+      <section class="panel chat-panel" aria-labelledby="chat-title">
+        <div class="panel-head"><div><span class="section-kicker">01 / AGENT</span><h2 id="chat-title">对话与工具执行</h2></div><span id="chat-state" class="quiet">就绪</span></div>
+        <div id="messages" class="messages" aria-live="polite">
+          <div class="welcome"><span class="welcome-icon">✦</span><strong>从一句话开始</strong><p>例如：检查订单客户名称不能为空，订单状态只能是 NEW、PAID、CANCELLED，创建后运行。值域规则请给出允许值；不确定字段时可先询问。</p></div>
+        </div>
+        <div class="suggestions"><button class="chip" data-prompt="检查订单客户名称不能为空，订单状态只能是 NEW、PAID、CANCELLED，创建后运行，并告诉我异常订单">创建并运行两条规则</button><button class="chip" data-prompt="刚才有哪些异常订单？">追问刚才的异常</button></div>
+        <form id="chat-form" class="composer"><label class="sr-only" for="chat-input">输入自然语言请求</label><textarea id="chat-input" rows="2" placeholder="输入任务，例如：运行刚才创建的规则…" required></textarea><button id="chat-submit" class="primary" type="submit">发送 <span aria-hidden="true">↗</span></button></form>
+        <p class="helper">Enter 发送 · Shift + Enter 换行 · 工具返回的 ID 可打开对应结果</p>
+      </section>
+
+      <div class="side-stack">
+        <section class="panel" aria-labelledby="rules-title">
+          <div class="panel-head"><div><span class="section-kicker">02 / RULES</span><h2 id="rules-title">规则库</h2></div><button class="icon-btn" id="refresh-rules" type="button" aria-label="刷新规则">↻</button></div>
+          <div id="rules" class="rule-list"><p class="placeholder">正在读取规则…</p></div>
+          <details class="manual"><summary>手动创建规则 <span>＋</span></summary>
+            <form id="rule-form" class="rule-form">
+              <label>规则名称<input id="rule-name" maxlength="120" required placeholder="例如：客户名称非空"></label>
+              <div class="form-grid"><label>数据表<select id="rule-table" required></select></label><label>字段<select id="rule-column" required></select></label></div>
+              <label>校验类型<select id="rule-type"><option value="NOT_NULL">非空校验</option><option value="ENUM">值域校验</option></select></label>
+              <label id="allowed-wrap" hidden>允许值（逗号分隔）<input id="rule-allowed" placeholder="NEW, PAID, CANCELLED"></label>
+              <div class="form-footer"><span id="rule-form-state" class="helper"></span><button class="secondary" type="submit">保存规则</button></div>
+            </form>
+          </details>
+        </section>
+
+        <section class="panel" aria-labelledby="results-title">
+          <div class="panel-head"><div><span class="section-kicker">03 / EXECUTIONS</span><h2 id="results-title">执行记录</h2></div><button class="icon-btn" id="refresh-results" type="button" aria-label="刷新执行记录">↻</button></div>
+          <div id="results" class="result-list"><p class="placeholder">正在读取执行记录…</p></div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <dialog id="result-dialog" class="result-dialog" aria-labelledby="dialog-title"><div class="dialog-head"><div><span class="section-kicker">SAVED EXECUTION</span><h2 id="dialog-title">执行详情</h2></div><button id="close-dialog" class="icon-btn" type="button" aria-label="关闭">×</button></div><div id="result-detail"></div></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
