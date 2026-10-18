@@ -1,6 +1,6 @@
 # 开发要求交付核对表
 
-核对依据：`数据质量Agent开发要求(2).md`。本文件只给评审快速定位；细节和测试命令见 README、DESIGN、TEST_RECORD。
+核对依据：`数据质量Agent开发要求(2).md`。本文件给评审快速定位；启动与演示看 README，设计、测试、学习记录在根目录，补充报告和截图见 `docs/`。
 
 | 开发要求 | 交付位置 | 实测情况 |
 | --- | --- | --- |
@@ -29,7 +29,7 @@
 | 不存在的规则或执行 ID | 返回 404 |
 | 数据变化与历史不变 | 独立 Docker/MySQL 测试，旧统计与样例不变 |
 | 数据库异常 | 隔离 Docker 停库实测健康状态 unavailable、执行返回 503 |
-| 空表 | 总数和参与数为 0，通过率 N/A |
+| 空表 | 真实 MySQL 中 `demo_empty_orders` 执行规则：总数和参与数为 0，通过率 N/A；`tests/test_acceptance.py::test_empty_and_all_skipped` |
 | 全部 NULL 的值域规则 | 全部跳过，参与数为 0，通过率 N/A |
 
 ## 演示前需了解的界限

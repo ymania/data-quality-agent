@@ -44,6 +44,6 @@ python3 scripts/verify_docker.py   # 独立 Docker/MySQL：建库、规则、上
 node --check app/static/app.js
 ```
 
-Docker 验证脚本创建并清理**自己的**临时项目，不触碰正式 `dq-desktop` 数据卷。预期与实际结果、尚未复验之处见 [交付核对表](DELIVERY_CHECKLIST.md) 和 [测试记录](TEST_RECORD.md)。[设计说明](DESIGN.md)解释工具编排与统计口径；[学习记录](LEARNING.md)说明参考资料、遇到的问题及 AI 编程助手的使用方式。
+Docker 验证脚本创建并清理**自己的**临时项目，不触碰正式 `dq-desktop` 数据卷。预期与实际结果、尚未复验之处见 [交付核对表](DELIVERY_CHECKLIST.md) 和 [测试记录](TEST_RECORD.md)。[设计说明](DESIGN.md)解释工具编排与统计口径；[学习记录](LEARNING.md)说明参考资料、遇到的问题及 AI 编程助手的使用方式。补充的面试讲解、专题报告和截图证据集中在 [docs](docs/README.md)。
 
 当前是本机单用户演示，没有登录、租户隔离或任务队列；不要将端口直接开放为多人公网服务。模型须支持 OpenAI 兼容的工具调用。当前 Docker 实例未配置模型密钥，因此本轮上传数据的自然语言流程只验证了工具参数绑定，未重新做真实模型调用；原 20 条订单的真实模型组合任务与追问已有独立验收记录。上传文件最大 5 MiB、20000 行，字段契约见数据接入说明。Windows/macOS 启动入口已提供，实际容器验收在 Linux 完成。
